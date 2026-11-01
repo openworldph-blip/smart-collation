@@ -1,0 +1,12 @@
+import React,{useState} from 'react';
+import {ChevronLeft,ChevronRight,CalendarDays} from 'lucide-react';
+import {todayManila,calendarCells} from './date-tools.js';
+import {fullDate} from './DateCards.jsx';
+export default function DeliveryCalendar({value,onChange,allowedDates,disabled=false,label='Delivery date',compact=false,minDate=''}){
+ const available=allowedDates?[...new Set(allowedDates)].sort():null;
+ const [month,setMonth]=useState(()=>(value||available?.find(d=>d>=todayManila())||available?.[0]||todayManila()).slice(0,7));
+ const [expanded,setExpanded]=useState(!compact);
+ function move(n){const d=new Date(month+'-01T12:00:00Z');d.setUTCMonth(d.getUTCMonth()+n);setMonth(d.toISOString().slice(0,7));}
+ const title=new Intl.DateTimeFormat('en-PH',{month:'long',year:'numeric',timeZone:'UTC'}).format(new Date(month+'-01T12:00:00Z'));
+ return <div className={`delivery-calendar ${disabled?'calendar-disabled':''}`}><div className="calendar-label">{label}</div>{compact&&<button type="button" className="calendar-selected" disabled={disabled} onClick={()=>setExpanded(s=>!s)}><CalendarDays size={18}/><span>{value?fullDate(value):'Choose a delivery date'}</span><ChevronRight size={16}/></button>}{expanded&&<><div className="calendar-month"><button type="button" className="icon-button" aria-label="Previous month" disabled={disabled} onClick={()=>move(-1)}><ChevronLeft size={20}/></button><strong>{title}</strong><button type="button" className="icon-button" aria-label="Next month" disabled={disabled} onClick={()=>move(1)}><ChevronRight size={20}/></button></div><div className="calendar-grid"><span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>{calendarCells(month).map((date,i)=>date?<button type="button" key={date} aria-label={fullDate(date)} aria-pressed={value===date} title={minDate&&date<minDate?'Delivery starts tomorrow':available&&!available.includes(date)?'Admin has not opened this delivery date':fullDate(date)} disabled={disabled||!!minDate&&date<minDate||!!available&&!available.includes(date)} className={value===date?'calendar-day selected':'calendar-day'} onClick={()=>{onChange(date);if(compact)setExpanded(false);}}>{Number(date.slice(-2))}</button>:<span className="calendar-empty" key={'empty-'+i}/>)}</div>{available&&<p className="calendar-help">Choose any highlighted date opened by Admin.</p>}</>}</div>;
+}

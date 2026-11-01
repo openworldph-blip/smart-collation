@@ -1,0 +1,248 @@
+{
+  "requestForDate": "2026-11-09",
+  "revision": 1,
+  "warning": "Illustrative quantities, units and assignments; item names from published source. Not actual requests.",
+  "branches": [
+    "Abanao",
+    "Porta",
+    "UB",
+    "Melted",
+    "Snowee"
+  ],
+  "rows": [
+    {
+      "zone": "Camp7",
+      "name": "Pork",
+      "unit": "kg",
+      "quantities": [
+        2,
+        3,
+        1,
+        0,
+        0
+      ],
+      "source": null
+    },
+    {
+      "zone": "Heavy Items",
+      "name": "Bigas",
+      "unit": "sack",
+      "quantities": [
+        1,
+        1,
+        1,
+        0,
+        0
+      ],
+      "source": null
+    },
+    {
+      "zone": "Heavy Items",
+      "name": "Oil in Can",
+      "unit": "can",
+      "quantities": [
+        1,
+        0,
+        1,
+        0,
+        0
+      ],
+      "source": null
+    },
+    {
+      "zone": "Packaging",
+      "name": "Rice Bowl 520cc",
+      "unit": "pack",
+      "quantities": [
+        2,
+        3,
+        2,
+        0,
+        0
+      ],
+      "source": null
+    },
+    {
+      "zone": "Packaging",
+      "name": "Drink cups",
+      "unit": "pack",
+      "quantities": [
+        1,
+        2,
+        1,
+        2,
+        3
+      ],
+      "source": null
+    },
+    {
+      "zone": "Packaging",
+      "name": "Paper Bag Large 20",
+      "unit": "pack",
+      "quantities": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "source": null
+    },
+    {
+      "zone": "Noodles",
+      "name": "Jin Mild",
+      "unit": "pack",
+      "quantities": [
+        4,
+        3,
+        3,
+        0,
+        0
+      ],
+      "source": null
+    },
+    {
+      "zone": "Noodles",
+      "name": "Buldak Pink",
+      "unit": "pack",
+      "quantities": [
+        2,
+        2,
+        1,
+        0,
+        0
+      ],
+      "source": null
+    },
+    {
+      "zone": "Market",
+      "name": "Kimchi",
+      "unit": "pack",
+      "quantities": [
+        2,
+        2,
+        2,
+        1,
+        1
+      ],
+      "source": "Golden Lion"
+    },
+    {
+      "zone": "Market",
+      "name": "Gyoza",
+      "unit": "pack",
+      "quantities": [
+        1,
+        2,
+        1,
+        0,
+        0
+      ],
+      "source": "Golden Lion"
+    },
+    {
+      "zone": "Market",
+      "name": "Carrot",
+      "unit": "kg",
+      "quantities": [
+        1,
+        2,
+        1,
+        1,
+        1
+      ],
+      "source": "Tagalog Market"
+    },
+    {
+      "zone": "Market",
+      "name": "Leeks",
+      "unit": "kg",
+      "quantities": [
+        0.5,
+        1,
+        0.5,
+        0,
+        0
+      ],
+      "source": "Tagalog Market"
+    },
+    {
+      "zone": "Market",
+      "name": "Mayonnaise",
+      "unit": "bottle",
+      "quantities": [
+        1,
+        1,
+        1,
+        0,
+        0
+      ],
+      "source": "Grocery"
+    },
+    {
+      "zone": "Market",
+      "name": "Sesame Seeds",
+      "unit": "pack",
+      "quantities": [
+        1,
+        1,
+        1,
+        0,
+        0
+      ],
+      "source": "Others"
+    },
+    {
+      "zone": "Shobe",
+      "name": "Red Sauce",
+      "unit": "pack",
+      "quantities": [
+        2,
+        2,
+        1,
+        0,
+        0
+      ],
+      "source": null
+    },
+    {
+      "zone": "Abanao",
+      "name": "Pork Toppings",
+      "unit": "kg",
+      "quantities": [
+        0,
+        2,
+        2,
+        0,
+        0
+      ],
+      "source": null
+    },
+    {
+      "zone": "Porta",
+      "name": "Milk Snowee",
+      "unit": "pack",
+      "quantities": [
+        0,
+        0,
+        0,
+        1,
+        2
+      ],
+      "source": null
+    },
+    {
+      "zone": "Coins",
+      "name": "20 10 5 1",
+      "unit": "set",
+      "quantities": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "source": null
+    }
+  ]
+}
