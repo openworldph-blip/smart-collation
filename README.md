@@ -4,7 +4,7 @@ GitHub Pages serves the phone interface. A Google Apps Script web app authorizes
 
 ## Current release state
 
-Apps Script version 1 is deployed and public browser reads have been verified. The release checker passes. GitHub website publication is in progress; do not share a QR until its canonical published URL is verified.
+Apps Script version 1 is deployed and public browser reads have been verified. The release checker passes. The website is live at https://openworldph-blip.github.io/smart-collation/ . GitHub Pages deployment succeeded, and browser reads from this public origin have been verified. The owner saved the Admin password. Before staff can order, Admin must assign each branch password in Branches → Branch login passwords.
 
 The old local preview and older GitHub apps are separate and unchanged.
 
@@ -31,7 +31,7 @@ Use the website to edit requests and the master checklist. `Request log` is an a
 
 Use a new repository for this app. Do not push into `snoweephPORTA/ramen-hack-UB`.
 
-The currently connected GitHub account is `openworldph-blip`. At preparation time, the connector listed no accessible repositories. Repository creation and Pages settings may need the owner's browser action.
+The currently connected GitHub account is `openworldph-blip`. The separate repository is https://github.com/openworldph-blip/smart-collation .
 
 Run the checks and build locally, then copy the verified dist output into docs/ and commit source and docs together to main. In Settings → Pages select Deploy from a branch, main, /docs. The optional workflow file is a future alternative and is not needed for branch publication. A relative Vite base supports project Pages paths.
 
@@ -71,4 +71,4 @@ node scripts/check-release.mjs
 npm run build
 ```
 
-The release checker is expected to fail until the owner completes Apps Script deployment and the actual URL is configured.
+The release checker passes for the configured Apps Script version 1 endpoint. All 36 local tests pass, including server authorization and concurrent-edit checks. Hosted public reads and rejection of unauthenticated writes were verified; authenticated multi-phone submissions remain to be verified with staff's first actual request. No fictitious requests were added to the production workbook.
