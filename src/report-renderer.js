@@ -10,7 +10,7 @@ export function wrapText(ctx,text,width){
  }
  if(current)lines.push(current);return lines;
 }
-export function renderReports(state,lines,date){
+export function renderReports(state,lines,date,onlyType){
  const W=2480,H=3508,left=120,right=2360,bottom=3230,pages={market:[],general:[]};
  const branches=sorted(state.branches).filter(b=>b.active||lines.some(l=>l.branchId===b.id));
  const panels=[];for(let i=0;i<branches.length;i+=5)panels.push(branches.slice(i,i+5));if(!panels.length)panels.push([]);
@@ -26,7 +26,7 @@ export function renderReports(state,lines,date){
   const rows=wrapText(ctx,text,w-24);rows.forEach((line,i)=>ctx.fillText(line,align==='center'?x+w/2:x+12,y+14+i*41));ctx.textAlign='left';
  }
  const groups=marketGroups(state,lines);
- for(let panelIndex=0;panelIndex<panels.length;panelIndex++){
+ if(onlyType!=='general')for(let panelIndex=0;panelIndex<panels.length;panelIndex++){
   const panel=panels[panelIndex],count=Math.max(panel.length,1),bw=1100/count;
   let page=start('market',panelIndex),currentSource=null;
   const sources=[...sorted(state.sources),{id:'',name:'Unassigned source — needs review'}];
@@ -45,7 +45,7 @@ export function renderReports(state,lines,date){
   }
   if(!groups.length){page.ctx.font='35px Arial';page.ctx.fillText('No draft items are assigned to the Market zone.',left,page.y);page.ctx.font='29px Arial';page.ctx.fillText('All selected items remain visible in the General Map.',left,page.y+65);}
  }
- for(let panelIndex=0;panelIndex<panels.length;panelIndex++){
+ if(onlyType!=='market')for(let panelIndex=0;panelIndex<panels.length;panelIndex++){
   const panel=panels[panelIndex],count=Math.max(panel.length,1),zw=100,bw=2140/count;
   let page=start('general',panelIndex);
   function mapHeader(){page.ctx.font='bold 32px Arial';const height=Math.max(90,...panel.map(b=>wrapText(page.ctx,b.name.toUpperCase(),bw-24).length*41+28));cell(page.ctx,left,page.y,zw,height,'');panel.forEach((b,i)=>cell(page.ctx,left+zw+i*bw,page.y,bw,height,b.name.toUpperCase(),{bold:true,align:'center',size:32}));page.y+=height;}
