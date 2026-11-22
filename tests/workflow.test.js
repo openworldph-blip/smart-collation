@@ -1,3 +1,5 @@
+import {mock} from 'node:test';
+mock.timers.enable({apis:['Date'],now:new Date('2026-11-02T00:00:00Z')});
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import seed from '../src/seed.json' with {type:'json'};

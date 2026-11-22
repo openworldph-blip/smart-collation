@@ -33,14 +33,14 @@ export function renderReports(state,lines,date){
   function marketHeader(source){
    cell(page.ctx,left,page.y,2240,66,source.name.toUpperCase(),{bold:true,size:33});page.y+=66;
    page.ctx.font='bold 30px Arial';const headerHeight=Math.max(66,...panel.map(b=>wrapText(page.ctx,b.abbreviation||b.name,bw-24).length*41+28));
-   let x=left;for(const [name,w] of [['ITEM',660],['UNIT',220],['TOTAL',260],...panel.map(b=>[b.abbreviation||b.name,bw])]){cell(page.ctx,x,page.y,w,headerHeight,name,{bold:true,align:x>left?'center':'left',size:30});x+=w;}page.y+=headerHeight;
+   let x=left;for(const [name,w] of [['ITEM',880],['TOTAL',260],...panel.map(b=>[b.abbreviation||b.name,bw])]){cell(page.ctx,x,page.y,w,headerHeight,name,{bold:true,align:x>left?'center':'left',size:30});x+=w;}page.y+=headerHeight;
   }
   for(const source of sources){const rows=groups.filter(r=>(r.sourceId||'')===source.id);if(!rows.length)continue;
    if(page.y+240>bottom)page=start('market',panelIndex);marketHeader(source);currentSource=source;
-   for(const row of rows){page.ctx.font='33px Arial';const h=Math.max(72,wrapText(page.ctx,row.shortName||row.name,636).length*41+28,wrapText(page.ctx,row.unit,196).length*41+28,...panel.map(b=>wrapText(page.ctx,row.allocations[b.id]||'',bw-24).length*41+28));
+   for(const row of rows){page.ctx.font='33px Arial';const h=Math.max(72,wrapText(page.ctx,row.shortName||row.name,856).length*41+28,...panel.map(b=>wrapText(page.ctx,row.allocations[b.id]||'',bw-24).length*41+28));
     if(h+180>bottom-180)throw Error('An item name or unit is too long to render readably. Shorten its print name.');
     if(page.y+h>bottom){page=start('market',panelIndex);marketHeader(currentSource);}
-    let x=left;for(const [value,w] of [[row.shortName||row.name,660],[row.unit,220],[row.total,260],...panel.map(b=>[row.allocations[b.id]||'',bw])]){cell(page.ctx,x,page.y,w,h,value,{bold:x===left+880,align:x>left?'center':'left'});x+=w;}page.y+=h;
+    let x=left;for(const [value,w] of [[row.shortName||row.name,880],[row.total,260],...panel.map(b=>[row.allocations[b.id]||'',bw])]){cell(page.ctx,x,page.y,w,h,value,{bold:x===left+880,align:x>left?'center':'left'});x+=w;}page.y+=h;
    }page.y+=24;
   }
   if(!groups.length){page.ctx.font='35px Arial';page.ctx.fillText('No draft items are assigned to the Market zone.',left,page.y);page.ctx.font='29px Arial';page.ctx.fillText('All selected items remain visible in the General Map.',left,page.y+65);}

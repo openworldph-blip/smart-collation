@@ -4,7 +4,7 @@ GitHub Pages serves the phone interface. A Google Apps Script web app authorizes
 
 ## Current release state
 
-Apps Script version 1 is deployed and public browser reads have been verified. The release checker passes. The website is live at https://openworldph-blip.github.io/smart-collation/ . GitHub Pages deployment succeeded, and browser reads from this public origin have been verified. The owner saved the Admin password. Before staff can order, Admin must assign each branch password in Branches → Branch login passwords.
+Apps Script version 2 is deployed and public browser reads have been verified. The release checker passes. The website is live at https://openworldph-blip.github.io/smart-collation/ . GitHub Pages deployment succeeded and public browser reads have been verified. Admin password is configured; Admin must assign branch passwords before staff order.
 
 The old local preview and older GitHub apps are separate and unchanged.
 
@@ -49,9 +49,9 @@ The owner signs in as Admin and assigns passwords under **Branches**. Branch pas
 
 - No localStorage, sessionStorage, IndexedDB, service worker or installed app. Passwords, tokens and unsaved input exist only in page memory. The browser may keep its normal static-file cache.
 - A small WebP mascot replaces the original large PNG for loading on phones.
-- Draft autosave waits two seconds after typing, then saves centrally. A visible save status and retry control expose failures. Submission waits for pending draft saves.
+- Draft autosave waits five seconds after typing, then saves centrally. A visible save status and retry control expose failures. Submission waits for pending draft saves.
 - Reloading signs staff out. Saved server drafts return after login. If changes have not saved, the page warns before closing; they can be lost if the browser is forcibly closed or the phone shuts down.
-- Status polling runs every 45 seconds only while visible, and on focus. Internet is required.
+- Status polling runs every 90 seconds only while visible, and on focus. Internet is required.
 - Login sessions are memory-only tokens backed by Apps Script cache, at most six hours; Google may evict cache entries earlier. Staff can sign in again without downloading records.
 
 ## Data integrity and access
@@ -71,4 +71,14 @@ node scripts/check-release.mjs
 npm run build
 ```
 
-The release checker passes for the configured Apps Script version 1 endpoint. All 36 local tests pass, including server authorization and concurrent-edit checks. Hosted public reads and rejection of unauthenticated writes were verified; authenticated multi-phone submissions remain to be verified with staff's first actual request. No fictitious requests were added to the production workbook.
+The release checker passes. All 38 local tests pass. Hosted public reads and rejection of unauthenticated writes were verified. Check the first real staff submission on a second phone; no fictitious requests were added to production.
+
+## November 22 update
+
+Status reads do not acquire the shared write lock. Each execution reads its head index once; immutable revisions are cached for five minutes. Snapshots return details for the selected delivery date only. Login reuses the salt from loaded metadata to avoid the extra challenge request. No password verifiers are exposed. A live three-request concurrent status check completed successfully in 3.6–4.1 seconds; real authenticated phone login still needs confirmation.
+
+All future dates are open automatically; today and earlier dates remain blocked for new branch requests. Historical requests remain available through date selection.
+
+Market Summary omits its unit column. The new 58 mm receipt uses source headings, dotted guides, and item/total rows; separate unit groups are kept separate even though units are not printed. Save the 384-pixel JPEG for a 58 mm thermal printer app, or use the browser print action. Actual MP-210 hardware output is unverified.
+
+Admin request entry now has a searchable, alphabetically sorted master-item list.

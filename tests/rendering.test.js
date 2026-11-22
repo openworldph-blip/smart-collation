@@ -17,6 +17,7 @@ test('long reports paginate, repeat date headers, and retain every item line',()
    assert(result[type].length>1);
    const pages=result[type].map(p=>JSON.parse(p.url));
    for(const texts of pages){assert(texts.some(t=>t.text.includes('MONDAY, NOVEMBER 9, 2026')));assert(texts.every(t=>t.y<=3400));assert(!texts.some(t=>t.text.includes('OPENWORLD')||t.text==='GENERAL MAP'||t.text==='MARKET SUMMARY'));}
+   if(type==='market')assert(!pages.flat().some(t=>t.text==='UNIT'),'Market Summary must not include a unit column');
    const entries=pages.flat().filter(t=>type==='general'?t.text.startsWith('•Item '):/^Item \d+$/.test(t.text));
    assert.equal(entries.length,210);assert.equal(new Set(entries.map(t=>t.text)).size,210);
   }

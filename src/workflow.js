@@ -12,7 +12,7 @@ export function readWorkflow(raw){
 }
 export function allDates(workflow){return [...new Set([...workflow.openDates,...Object.values(workflow.submissions).map(r=>r.date)])].sort();}
 export function submitLocal(workflow,state,drafts,{branchId,date,submittedBy,nothingNeeded},now=new Date().toISOString()){
- if(!validDate(date)||!workflow.openDates.includes(date))throw Error('Choose an Admin-opened delivery date first.');
+ if(!validDate(date)||(!workflow.allDatesOpen&&!workflow.openDates.includes(date)))throw Error('Choose an Admin-opened delivery date first.');
  if(date<=todayManila(now))throw Error('Delivery starts tomorrow. Choose tomorrow or a later delivery date.');
  if(!state.branches.some(b=>b.id===branchId&&b.active))throw Error('This branch is not active.');
  const key=`${date}/${branchId}`;

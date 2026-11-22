@@ -6,10 +6,10 @@ import crypto from 'node:crypto';
 import seed from '../src/seed.json' with {type:'json'};
 
 function harness(){
- const sheets={},properties=new Map(),cache=new Map();
- class Sheet{constructor(headers){this.rows=[headers];this.max=1000;}getLastRow(){return this.rows.length;}getMaxRows(){return this.max;}insertRowsAfter(n,count){this.max+=count;}getRange(row,col,height,width){const sheet=this;return {getValues(){return Array.from({length:height},(_,i)=>Array.from({length:width},(_,j)=>sheet.rows[row-1+i]?.[col-1+j]??''));},setValues(values){for(let i=0;i<height;i++){sheet.rows[row-1+i]??=[];for(let j=0;j<width;j++)sheet.rows[row-1+i][col-1+j]=values[i][j];}return this;},setNumberFormat(){return this;}};}}
+ const sheets={},properties=new Map(),cache=new Map(),stats={locks:0,held:false,reads:0};
+ class Sheet{constructor(headers){this.rows=[headers];this.max=1000;}getLastRow(){return this.rows.length;}getMaxRows(){return this.max;}insertRowsAfter(n,count){this.max+=count;}getRange(row,col,height,width){const sheet=this;return {getValues(){stats.reads++;return Array.from({length:height},(_,i)=>Array.from({length:width},(_,j)=>sheet.rows[row-1+i]?.[col-1+j]??''));},setValues(values){for(let i=0;i<height;i++){sheet.rows[row-1+i]??=[];for(let j=0;j<width;j++)sheet.rows[row-1+i][col-1+j]=values[i][j];}return this;},setNumberFormat(){return this;}};}}
  sheets.Heads=new Sheet(['Key','Revision','Start row','Chunk count','Updated at']);sheets.Records=new Sheet(['Key','Revision','Chunk','JSON']);sheets['Request log']=new Sheet(['Request key','Delivery date','Branch','Status','Submitted by','Saved at','Item','Qty','Unit','Version']);
- const context=vm.createContext({console,Date,Intl,JSON,Map,Set,TextEncoder,Utilities:{getUuid:()=>crypto.randomUUID(),formatDate:(d,tz)=>{const p=new Intl.DateTimeFormat('en-CA',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(d);return ['year','month','day'].map(k=>p.find(p=>p.type===k).value).join('-');},computeHmacSha256Signature:(s,k)=>[...crypto.createHmac('sha256',k).update(s).digest()]},PropertiesService:{getScriptProperties:()=>({getProperty:k=>properties.get(k)||null,setProperty:(k,v)=>properties.set(k,v)})},CacheService:{getScriptCache:()=>({get:k=>cache.get(k)||null,put:(k,v)=>cache.set(k,v),remove:k=>cache.delete(k)})},SpreadsheetApp:{openById:()=>({getSheetByName:n=>sheets[n]}),flush(){}},LockService:{getScriptLock:()=>({tryLock:()=>true,releaseLock(){}})}});
+ const context=vm.createContext({console,Date,Intl,JSON,Map,Set,TextEncoder,Utilities:{getUuid:()=>crypto.randomUUID(),formatDate:(d,tz)=>{const p=new Intl.DateTimeFormat('en-CA',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(d);return ['year','month','day'].map(k=>p.find(p=>p.type===k).value).join('-');},computeHmacSha256Signature:(s,k)=>[...crypto.createHmac('sha256',k).update(s).digest()]},PropertiesService:{getScriptProperties:()=>({getProperty:k=>properties.get(k)||null,setProperty:(k,v)=>properties.set(k,v)})},CacheService:{getScriptCache:()=>({get:k=>cache.get(k)||null,put:(k,v)=>cache.set(k,v),remove:k=>cache.delete(k)})},SpreadsheetApp:{openById:()=>({getSheetByName:n=>sheets[n]}),flush(){}},LockService:{getScriptLock:()=>({tryLock:()=>{stats.locks++;stats.held=true;return true;},releaseLock(){stats.held=false;}})}});
  vm.runInContext(fs.readFileSync(new URL('../apps-script/Helpers.gs',import.meta.url),'utf8'),context);
  vm.runInContext(fs.readFileSync(new URL('../apps-script/Code.gs',import.meta.url),'utf8'),context);
  properties.set('PEPPER','synthetic-test-only-secret');
@@ -18,8 +18,8 @@ function harness(){
  const a=seed.branches[0].id,b=seed.branches[1].id,proof='a'.repeat(64),record={salt:'b'.repeat(32),hash:proof,iterations:160000};
  for(const scope of ['admin',a,b])context.storeCredential_(scope,record);
  const login=scope=>context.dispatch_({action:'login',scope,proof}).token;
- const call=(token,action,payload={})=>context.dispatch_({token,action,...payload});
- return {context,date,a,b,proof,login,call,sheets,properties};
+ const call=(token,action,payload={})=>context.dispatch_({token,action,date,...payload});
+ return {context,date,a,b,proof,login,call,sheets,properties,stats};
 }
 test('server denies cross-branch drafts and Admin operations; public status has no item details',()=>{
  const h=harness(),token=h.login(h.a),item=seed.items[0],rows={[item.id]:{quantity:'1 tab',unit:'',snapshot:item}};
@@ -27,7 +27,7 @@ test('server denies cross-branch drafts and Admin operations; public status has 
  assert.throws(()=>h.call(token,'catalog',{catalog:seed,expectedVersion:1}),/Admin access/);
  const result=h.call(token,'draft',{date:h.date,branchId:h.a,rows,expectedVersion:0});
  h.call(token,'submit',{date:h.date,branchId:h.a,submittedBy:'Fixture',nothingNeeded:false,expectedDraftVersion:result.version});
- const own=h.call(token,'snapshot'),publicView=h.context.dispatch_({action:'snapshot'}),other=h.call(h.login(h.b),'snapshot');
+ const own=h.call(token,'snapshot'),publicView=h.context.dispatch_({action:'snapshot',date:h.date}),other=h.call(h.login(h.b),'snapshot');
  assert.equal(own.workflow.submissions[h.date+'/'+h.a].items[item.id].quantity,'1 tab');
  for(const view of [publicView,other]){assert.equal(Object.keys(view.workflow.submissions[h.date+'/'+h.a].items).length,0);assert.equal(view.workflow.submissions[h.date+'/'+h.a].submittedBy,'');assert.equal(Object.keys(view.drafts).length,0);}
  assert.equal(JSON.stringify(publicView).includes('verifier'),false);assert.equal(JSON.stringify(publicView).includes(h.proof),false);
@@ -63,4 +63,18 @@ test('Admin corrections retain receipt snapshots and request revisions; safe log
 test('frontend entry point has no persistent browser storage',()=>{
  const code=fs.readFileSync(new URL('../src/main.jsx',import.meta.url),'utf8')+fs.readFileSync(new URL('../src/shared-api.js',import.meta.url),'utf8');
  assert.doesNotMatch(code,/localStorage|sessionStorage|indexedDB/);
+});
+
+test('status reads skip the write lock and warm snapshots only read the index',()=>{
+ const h=harness();h.context.dispatch_({action:'snapshot',date:h.date});const before={...h.stats};
+ h.context.dispatch_({action:'snapshot',date:h.date});
+ assert.equal(h.stats.locks,before.locks);assert.equal(h.stats.reads-before.reads,1);
+ const original=h.context.snapshot_;h.context.snapshot_=s=>{assert.equal(h.stats.held,false,'snapshot should run after releasing write lock');return original(s);};
+ h.login(h.a);
+});
+test('every future delivery date is allowed and snapshots load details only for the selected date',()=>{
+ const h=harness(),token=h.login(h.a),far='2030-12-15';
+ h.call(token,'submit',{date:far,branchId:h.a,submittedBy:'Fixture',nothingNeeded:true,expectedDraftVersion:0});
+ const current=h.call(token,'snapshot',{date:h.date});assert.equal(current.workflow.allDatesOpen,true);assert.equal(current.workflow.submissions[far+'/'+h.a].summaryOnly,true);
+ const old=h.call(token,'snapshot',{date:far});assert.equal(old.workflow.submissions[far+'/'+h.a].nothingNeeded,true);assert.equal(old.workflow.submissions[far+'/'+h.a].summaryOnly,undefined);
 });

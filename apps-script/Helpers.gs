@@ -21,7 +21,9 @@ var SC = (() => {
   // apps-script/helpers-entry.js
   var helpers_entry_exports = {};
   __export(helpers_entry_exports, {
+    addDays: () => addDays,
     saveAdminRequest: () => saveAdminRequest,
+    sevenDays: () => sevenDays,
     submitLocal: () => submitLocal,
     validateState: () => validateState
   });
@@ -68,13 +70,21 @@ var SC = (() => {
     const parts = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Manila", year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(new Date(now));
     return ["year", "month", "day"].map((k) => parts.find((p) => p.type === k).value).join("-");
   }
+  function addDays(date, count) {
+    const d = /* @__PURE__ */ new Date(date + "T12:00:00Z");
+    d.setUTCDate(d.getUTCDate() + count);
+    return d.toISOString().slice(0, 10);
+  }
+  function sevenDays(date) {
+    return Array.from({ length: 7 }, (_, i) => addDays(date, i));
+  }
 
   // src/workflow.js
   function validDate(date) {
     return typeof date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(date) && !Number.isNaN(Date.parse(date + "T12:00:00Z")) && (/* @__PURE__ */ new Date(date + "T12:00:00Z")).toISOString().slice(0, 10) === date;
   }
   function submitLocal(workflow, state, drafts, { branchId, date, submittedBy, nothingNeeded }, now = (/* @__PURE__ */ new Date()).toISOString()) {
-    if (!validDate(date) || !workflow.openDates.includes(date)) throw Error("Choose an Admin-opened delivery date first.");
+    if (!validDate(date) || !workflow.allDatesOpen && !workflow.openDates.includes(date)) throw Error("Choose an Admin-opened delivery date first.");
     if (date <= todayManila(now)) throw Error("Delivery starts tomorrow. Choose tomorrow or a later delivery date.");
     if (!state.branches.some((b) => b.id === branchId && b.active)) throw Error("This branch is not active.");
     const key = `${date}/${branchId}`;
