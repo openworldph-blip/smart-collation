@@ -49,3 +49,5 @@
 .master-item-search{flex:1;min-width:220px}.master-item-search select{width:100%;height:160px}.master-item-search .field{margin-bottom:8px}.market-receipt{width:100%;max-width:384px;background:white;color:black;border:1px solid #ddd;padding:18px;font:16px Arial}.receipt-source{font-weight:bold;margin-top:15px;font-size:17px}.receipt-row{display:flex;align-items:baseline;gap:5px;line-height:1.5}.receipt-name{max-width:75%;overflow-wrap:anywhere}.receipt-dots{flex:1;min-width:8px;border-bottom:1px dotted black}.receipt-total{text-align:right;max-width:24%;overflow-wrap:anywhere}.market-receipt hr{border:0;border-top:1px solid black;margin:8px 0}.receipt-actions{display:flex;flex-wrap:wrap;gap:8px}.segmented{flex-wrap:wrap}
 
 .receipt-image{display:block;max-width:100%;width:384px;height:auto;border:1px solid #eee;margin-top:15px}
+
+.bmp-notes{margin:12px 0}.bmp-notes textarea{width:100%;min-height:120px;resize:vertical}.bmp-notes .section-heading{margin-top:8px;gap:12px}.bmp-notes small{color:var(--muted)}
